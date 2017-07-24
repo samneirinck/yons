@@ -1,0 +1,9 @@
+version: "2"
+services: 
+  register:
+    build: register
+    volumes:
+      - ./register:/code
+    network_mode: "host"
+
+  
