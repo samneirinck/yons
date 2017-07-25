@@ -1,43 +1,43 @@
-import urllib
-import socket
 import sys
 import requests
 import soco
-import logging
+from netifaces import interfaces, AF_INET, ifaddresses
 
-logging.basicConfig(level=logging.DEBUG)
+data = [ifaddresses(i) for i in interfaces()]
+inetInterfaces = ([d[AF_INET][0]['addr'] for d in data if d.get(AF_INET)])
 
-print('Looking for Sonos installation')
+inetInterface = None
+for inetInterface in inetInterfaces:
+    print('Looking for Sonos devices on network interface ' + inetInterface, end='... ')
+    devices = soco.discover(interface_addr=inetInterface)
+    if devices is None:
+        print('None found')
+        continue
 
+    device = devices.pop()
+    print("Found a Sonos device named '" + device.player_name + "'")
+    break
 
-device = soco.discovery.discover(interface_addr='192.168.0.179')
 if device is None:
     print('No Sonos installation found. Manual registration required')
     sys.exit(1)
 
-print('Sonos installation found. Registering music service on ' + device.ip_address)
+musicServiceUri = 'http://' + inetInterface + ':8085/'
+registrationUri = 'http://{}:1400/customsd'.format(device.ip_address)
 
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.connect(("8.8.8.8",53))
-
-registrationUri =  'http://{}:1400/customsd.htm'.format(device.ip_address)
-print(registrationUri)
-uri = 'http://{}:8085/'.format(s.getsockname()[0])
-s.close()
-
-params = {
+params = {                                    
     'sid': 246,
     'name': 'YouTube',
-    'uri': uri,
-    'secureUri': uri,
+    'uri': musicServiceUri,
+    'secureUri': musicServiceUri,
     'pollInterval': 60,
     'authType': 'DeviceLink',
     'stringsVersion': 1,
-    'stringsUri': uri + '/static/strings.xml',
+    'stringsUri': musicServiceUri + '/static/strings.xml',
     'presentationMapVersion': 0,
     'presentationMapUri': '',
     'containerType': 'MService',
     'caps': 'search'
 }
 
-#r = requests.post()
+requests.post(registrationUri, data=params)
