@@ -6,7 +6,7 @@ from netifaces import interfaces, AF_INET, ifaddresses
 
 DATA = [ifaddresses(i) for i in interfaces()]
 INET_INTERFACES = ([d[AF_INET][0]['addr'] for d in DATA if d.get(AF_INET)])
-
+DEVICE = None
 INET_INTERFACE = None
 for INET_INTERFACE in INET_INTERFACES:
     print('Looking for Sonos devices on network interface ' + INET_INTERFACE, end='... ')
@@ -15,16 +15,16 @@ for INET_INTERFACE in INET_INTERFACES:
         print('None found')
         continue
 
-    device = devices.pop()
-    print("Found a Sonos device named '" + device.player_name + "'")
+    DEVICE = devices.pop()
+    print("Found a Sonos device named '" + DEVICE.player_name + "'")
     break
 
-if device is None:
+if DEVICE is None:
     print('No Sonos installation found. Manual registration required')
     sys.exit(1)
 
 MUSIC_SERVICE_URI = 'http://' + INET_INTERFACE + ':8085/'
-REGISTRATION_URI = 'http://{}:1400/customsd'.format(device.ip_address)
+REGISTRATION_URI = 'http://{}:1400/customsd'.format(DEVICE.ip_address)
 
 PARAMS = {
     'sid': 246,
