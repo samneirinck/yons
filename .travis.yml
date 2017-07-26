@@ -8,7 +8,7 @@ services:
   - docker
 
 before_install:
-  - docker build -t samneirinck/yons-musicservice musicservice
+ # - docker build -t samneirinck/yons-musicservice musicservice
 
 install: 
   - pip install pylint
@@ -16,5 +16,12 @@ install:
   - pip install -r musicservice/requirements.txt
 
 script:
-  - pylint register/register.py
-  - pylint musicservice/musicservice.py
+  - docker build -t samneirinck/yons-musicservice musicservice
+  # - pylint register/register.py
+  # - pylint musicservice/musicservice.py
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker push samneirinck/yons-musicservice;
+    fi
