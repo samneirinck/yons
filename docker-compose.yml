@@ -1,9 +1,14 @@
 version: "2"
 services: 
-  register:
-    build: register
+  # register:
+  #   build: register
+  #   volumes:
+  #     - ./register:/code
+  #   network_mode: "host"
+  music-service:
+    build: musicservice
     volumes:
-      - ./register:/code
-    network_mode: "host"
-
+      - ./musicservice:/code
+    ports:
+      - "8085:8085"
   
