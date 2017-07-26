@@ -1,0 +1,20 @@
+sudo: required
+
+language: python
+python:
+  - "3.6" 
+
+services:
+  - docker
+
+before_install:
+  - docker build -t samneirinck/yons-musicservice musicservice
+
+install: 
+  - pip install pylint
+  - pip install -r register/requirements.txt
+  - pip install -r musicservice/requirements.txt
+
+script:
+  - pylint register/register.py
+  - pylint musicservice/musicservice.py
