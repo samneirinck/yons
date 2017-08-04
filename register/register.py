@@ -32,7 +32,7 @@ PARAMS = {
     'uri': MUSIC_SERVICE_URI,
     'secureUri': MUSIC_SERVICE_URI,
     'pollInterval': 60,
-    'authType': 'DeviceLink',
+    'authType': 'AppLink',
     'stringsVersion': 1,
     'stringsUri': MUSIC_SERVICE_URI + '/static/strings.xml',
     'presentationMapVersion': 0,
